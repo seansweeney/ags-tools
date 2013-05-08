@@ -5,6 +5,34 @@ import urllib
 # json encode/decode
 import json
 
+# System libraries
+from os import environ
+
+# Command line args
+import argparse 
+
+# Prompt for password without echoing
+import getpass 
+
+# Function to parse the command line and return the standard arguments
+def getArgs(parser):
+    parser.add_argument('-s', '--server', required=True, help='Server name')
+    parser.add_argument('-u', '--user', required=False, help='User name')
+    parser.add_argument('-p', '--password', required=False, help='Password')
+    parser.add_argument('-f', '--filename', required=False, help='Output file name', default=environ['TEMP'] + '\\agsstarted.txt')
+
+    args = parser.parse_args()
+
+    # Prompt for username if not provided
+    if not args.user:
+        args.user = raw_input("Enter user name: ")
+        
+    # Prompt for password using getpass if not provided
+    if not args.password:
+        args.password = getpass.getpass("Enter password: ")
+   
+    return args
+
 # A function to generate a token given username, password and the adminURL.
 def getToken(username, password, serverName, serverPort):
     # Token URL is typically http://server[:port]/arcgis/admin/generateToken
@@ -43,7 +71,6 @@ class RequestException(Exception):
 
 class JsonErrorException(Exception):
     pass
-
 
 # Perform a request
 def sendRequest(serverName, serverPort, reqURL, params, headers):

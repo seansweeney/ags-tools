@@ -2,46 +2,21 @@
 
 # url fetch
 import urllib
-# json encode/decode
-import json
 
-# System tools
-import sys, datetime   
-from os import environ
+# System libraries
+import sys
 
 # Command line args
 import argparse 
 
-# Prompt for password without echoing
-import getpass 
-
 # Common arcgis server functions
-from agsextras import getToken, saveList, readList, RequestException, JsonErrorException, sendRequest
+from agsextras import getArgs, getToken, saveList, RequestException, JsonErrorException, sendRequest
 
 def main(argv=None):
-    # Setup the command line argument parser and parse
+    # Create the parser object here and pass it in so script-specific arguments can be added if necessary
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--server', required=True, help='Server name')
-    parser.add_argument('-u', '--user', required=False, help='User name')
-    parser.add_argument('-p', '--password', required=False, help='Password')
-    parser.add_argument('-f', '--filename', required=False, help='Output file name', default=environ['TEMP'] + '\\agsstarted.txt')
-
-    args = parser.parse_args()
-
-    # Prompt for username if not provided
-    if args.user:
-        username = args.user
-    else:
-        username = raw_input("Enter user name: ")
-        
-    # Prompt for password using getpass if not provided
-    if args.password:
-        password = args.password
-    else:
-        password = getpass.getpass("Enter password: ")
-   
-    serverName = args.server
-    filename = args.filename
+    # Add script-specific arguments before passing in the parser
+    args = getArgs(parser)
 
     # These may be configuration dependant.
     # Can add args above if necessary
@@ -52,7 +27,7 @@ def main(argv=None):
     startedList = []
     
     # Get a token
-    token = getToken(username, password, serverName, serverPort)
+    token = getToken(args.user, args.password, args.server, serverPort)
     if token == "":
         print "Could not generate a token with the username and password provided."
         return
@@ -72,7 +47,7 @@ def main(argv=None):
     
     # Post the request
     try:
-        data = sendRequest(serverName, serverPort, reqURL, params, headers)
+        data = sendRequest(args.server, serverPort, reqURL, params, headers)
     except RequestException:
         print "Could not read folder information."
         return
@@ -88,7 +63,7 @@ def main(argv=None):
         reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/status"
         # Post the request
         try:
-            data = sendRequest(serverName, serverPort, reqURL, params, headers)
+            data = sendRequest(args.server, serverPort, reqURL, params, headers)
         except RequestException:
             print "Error while checking status for " + fullSvcName
             return
@@ -107,7 +82,7 @@ def main(argv=None):
                 print "Stopping: " + fullSvcName
                 # Don't need to restore the returned data for this request
                 # All we get out of it is status which is handeled in the called function
-                sendRequest(serverName, serverPort, reqURL, params, headers)
+                sendRequest(args.server, serverPort, reqURL, params, headers)
             except RequestException:
                 print "Request error while stopping " + fullSvcName
                 return
@@ -122,7 +97,7 @@ def main(argv=None):
     else:
         # Write out all the started services found
         # This could alternatively be written to an e-mail or a log file
-        saveList(startedList, filename)
+        saveList(startedList, args.filename)
         print '\n'.join(startedList)
 
     return
