@@ -23,7 +23,7 @@ def main(argv=None):
     serverPort = 6080
     folder = 'root'
 
-    startedList = readList(args.filename)
+    statusList = readList(args.filename)
 
     # Get a token
     token = getToken(args.user, args.password, args.server, serverPort)
@@ -43,7 +43,7 @@ def main(argv=None):
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
     
     # Loop through each service in the list and get the status
-    for fullSvcName in startedList:
+    for fullSvcName in statusList:
         # Construct URL to get the status, then make the request                
         reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/status"
         # Post the request
