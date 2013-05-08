@@ -1,4 +1,9 @@
-import urllib, httplib, json
+# Client-side http
+import httplib
+# url fetch
+import urllib
+# json encode/decode
+import json
 
 # A function to generate a token given username, password and the adminURL.
 def getToken(username, password, serverName, serverPort):
@@ -30,6 +35,39 @@ def getToken(username, password, serverName, serverPort):
         # Extract the token from it
         token = json.loads(data)        
         return token['token']            
+
+# Define some custom exception classes for sendRequest
+# This will help us distinguis any errors on the calling side
+class RequestException(Exception):
+    pass
+
+class JsonErrorException(Exception):
+    pass
+
+
+# Perform a request
+def sendRequest(serverName, serverPort, reqURL, params, headers):
+    httpConn = httplib.HTTPConnection(serverName, serverPort)
+    httpConn.request("POST", reqURL, params, headers)
+
+    # Read response
+    response = httpConn.getresponse()
+    if (response.status != 200):
+        httpConn.close()
+        raise RequestException('Invalid response from request.')
+
+    respData = response.read()
+
+    # Done with the connection - close before error checking
+    httpConn.close()
+
+    # Check that data returned is not an error object
+    if not assertJsonSuccess(respData):          
+        raise JsonErrorException(str(respData))
+
+    # Deserialize response into Python object
+    data = json.loads(respData)
+    return data
 
 # A function that checks that the input JSON object 
 #  is not an error object.

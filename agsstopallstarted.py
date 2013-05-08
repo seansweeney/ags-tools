@@ -1,7 +1,5 @@
 #! python
 
-# Client-side http
-import httplib
 # url fetch
 import urllib
 # json encode/decode
@@ -18,7 +16,7 @@ import argparse
 import getpass 
 
 # Common arcgis server functions
-from agsextras import getToken, assertJsonSuccess, saveList, readList
+from agsextras import getToken, saveList, readList, RequestException, JsonErrorException, sendRequest
 
 def main(argv=None):
     # Setup the command line argument parser and parse
@@ -65,77 +63,58 @@ def main(argv=None):
     else:
         folder += "/"
             
-    folderURL = "/arcgis/admin/services/" + folder
+    reqURL = "/arcgis/admin/services/" + folder
     
-    # This request only needs the token and the response formatting parameter 
+    # The requests used below only need the token and the response formatting parameter (json)
     params = urllib.urlencode({'token': token, 'f': 'json'})
-    
+    # The request headers are also fixed
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
     
-    # Connect to URL and post parameters    
-    httpConn = httplib.HTTPConnection(serverName, serverPort)
-    httpConn.request("POST", folderURL, params, headers)
-    
-    # Read response
-    response = httpConn.getresponse()
-    if (response.status != 200):
-        httpConn.close()
+    # Post the request
+    try:
+        data = sendRequest(serverName, serverPort, reqURL, params, headers)
+    except RequestException:
         print "Could not read folder information."
         return
-    else:
-        data = response.read()
-        
-        # Check that data returned is not an error object
-        if not assertJsonSuccess(data):          
-            print "Error when reading folder information. " + str(data)
+    except JsonErrorException as e:
+        print "Error when reading folder information. " + str(e)
+        return
 
-        # Deserialize response into Python object
-        dataObj = json.loads(data)
-        httpConn.close()
+    # Loop through each service in the folder and get the status
+    for item in data['services']:
+        fullSvcName = item['serviceName'] + "." + item['type']
 
-        # Loop through each service in the folder and get the status
-        for item in dataObj['services']:
+        # Construct URL to get the status, then make the request                
+        reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/status"
+        # Post the request
+        try:
+            data = sendRequest(serverName, serverPort, reqURL, params, headers)
+        except RequestException:
+            print "Error while checking status for " + fullSvcName
+            return
+        except JsonErrorException as e:
+            print "Error returned when extracting status information for " + fullSvcName + "."
+            print str(e)
+            return
 
-            fullSvcName = item['serviceName'] + "." + item['type']
+        if data['realTimeState'] == "STARTED":
+            startedList.append(fullSvcName)
+            # Construct the URL to stop the service then make the request
+            reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/stop"
 
-            # Construct URL to get the status, then make the request                
-            statusURL = "/arcgis/admin/services/" + folder + fullSvcName + "/status"
-            httpConn.request("POST", statusURL, params, headers)
-            
-            # Read status response
-            statusResponse = httpConn.getresponse()
-            if (statusResponse.status != 200):
-                httpConn.close()
-                print "Error while checking status for " + fullSvcName
+            # Post the request
+            try:
+                print "Stopping: " + fullSvcName
+                # Don't need to restore the returned data for this request
+                # All we get out of it is status which is handeled in the called function
+                sendRequest(serverName, serverPort, reqURL, params, headers)
+            except RequestException:
+                print "Request error while stopping " + fullSvcName
                 return
-            else:
-                statusData = statusResponse.read()
-                              
-                # Check that data returned is not an error object
-                if not assertJsonSuccess(statusData):
-                    print "Error returned when retrieving status information for " + fullSvcName + "."
-                    print str(statusData)
-                else:
-                    # Add the started service to a list
-                    statusDataObj = json.loads(statusData)
-                    if statusDataObj['realTimeState'] == "STARTED":
-                        startedList.append(fullSvcName)
-                        # Construct the URL to stop the service then make the request
-                        stopURL = "/arcgis/admin/services/" + folder + fullSvcName + "/stop"
-                        httpConn.request("POST", stopURL, params, headers)
-
-                        # Read the status response
-                        statusResponse = httpConn.getresponse()
-                        if (statusResponse.status != 200):
-                            httpConn.close()
-                            print "Error while checking status for " + fullSvcName
-                            return
-                        else:
-                            statusData = statusResponse.read()
-                            if not assertJsonSuccess(statusData):
-                                print "Error returned when stopping " + fullSvcName + "."
-                                print str(statusData)
-            httpConn.close()           
+            except JsonErrorException as e:
+                print "Error returned when stopping " + fullSvcName + "."
+                print str(e)
+                return
 
     # Check number of started services found
     if len(startedList) == 0:
