@@ -29,10 +29,20 @@ Be sure to add the lib directory to your PYTHONPATH.  To make the scripts easier
 -f FILENAME
 
     File for inputting or outputting a list of services to manage.
+    Default: environ['TEMP'] + '\\agsstarted.txt'
   
 ### agsstopstarted.py
+Query the server for started services, stop all of them, and write a list to disk for later re-starting.
 
 ```PowerShell
 agsstopallstarted.py [-h] -s SERVER [-u USER] [-p PASSWORD]
+                     [-f FILENAME]
+```
+
+### agsstatusfromlist.py
+Get the status of the services listed in the given file.  This is a useful double-check after starting the services from the list.
+
+```PowerShell
+agsstatusfromlist.py [-h] -s SERVER [-u USER] [-p PASSWORD]
                      [-f FILENAME]
 ```
