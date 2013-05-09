@@ -34,6 +34,7 @@ def getArgs(parser):
     return args
 
 # A function to generate a token given username, password and the adminURL.
+# TODO: Refactor to use sendRequest function
 def getToken(username, password, serverName, serverPort):
     # Token URL is typically http://server[:port]/arcgis/admin/generateToken
     tokenURL = "/arcgis/admin/generateToken"
