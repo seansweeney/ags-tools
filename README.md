@@ -18,7 +18,12 @@ Be sure to add the lib directory to your PYTHONPATH.  To make the scripts easier
 ### Common Arguments
 -s SERVER
 
-    The ArgGIS Server name.  Port 6080 is assummed in the current version.
+    The ArgGIS Server name.
+
+--serverport SERVERPORT
+
+   	Optional server port.
+    Default: 6080
 
 -u USER
 
@@ -30,15 +35,15 @@ Be sure to add the lib directory to your PYTHONPATH.  To make the scripts easier
   
 -f FILENAME
 
-    File for inputting or outputting a list of services to manage.
+    Optional file for inputting or outputting a list of services to manage.
     Default: environ['TEMP'] + '\\agsstarted.txt'
-  
+
 ### agsstopstarted.py
 Query the server for started services, stop all of them, and write a list to disk for later re-starting.
 
 ```PowerShell
 agsstopallstarted.py [-h] -s SERVER [-u USER] [-p PASSWORD]
-                     [-f FILENAME]
+                     [-f FILENAME] [--serverport SERVERPORT]
 ```
 
 ### agsstatusfromlist.py
@@ -46,7 +51,7 @@ Get the status of the services listed in the given file.  This is a useful doubl
 
 ```PowerShell
 agsstatusfromlist.py [-h] -s SERVER [-u USER] [-p PASSWORD]
-                     [-f FILENAME]
+                     [-f FILENAME] [--serverport SERVERPORT]
 ```
 
 ### agsstartfromlist.py
@@ -54,5 +59,5 @@ Start the services listed in the given file.
 
 ```PowerShell
 agsstartfromlist.py [-h] -s SERVER [-u USER] [-p PASSWORD]
-                    [-f FILENAME]
+                    [-f FILENAME] [--serverport SERVERPORT]
 ```

@@ -20,6 +20,7 @@ def getArgs(parser):
     parser.add_argument('-u', '--user', required=False, help='User name')
     parser.add_argument('-p', '--password', required=False, help='Password')
     parser.add_argument('-f', '--filename', required=False, help='Output file name', default=environ['TEMP'] + '\\agsstarted.txt')
+    parser.add_argument('--serverport', required=False, help='Server port', default='6080')
 
     args = parser.parse_args()
 

@@ -20,14 +20,13 @@ def main(argv=None):
 
     # These may be configuration dependant.
     # Can add args above if necessary
-    serverPort = 6080
     folder = 'root'
 
     # Keep track of the started services
     startedList = []
 
     # Get a token
-    token = getToken(args.user, args.password, args.server, serverPort)
+    token = getToken(args.user, args.password, args.server, args.serverport)
     if token == "":
         print "Could not generate a token with the username and password provided."
         return
@@ -47,7 +46,7 @@ def main(argv=None):
 
     # Post the request
     try:
-        data = sendRequest(args.server, serverPort, reqURL, body, headers)
+        data = sendRequest(args.server, args.serverport, reqURL, body, headers)
     except RequestException:
         print "Could not read folder information."
         return
@@ -63,7 +62,7 @@ def main(argv=None):
         reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/status"
         # Post the request
         try:
-            data = sendRequest(args.server, serverPort, reqURL, body, headers)
+            data = sendRequest(args.server, args.serverport, reqURL, body, headers)
         except RequestException:
             print "Error while checking status for " + fullSvcName
             return
@@ -82,7 +81,7 @@ def main(argv=None):
                 print "Stopping: " + fullSvcName
                 # Don't need to restore the returned data for this request
                 # All we get out of it is status which is handeled in the called function
-                sendRequest(args.server, serverPort, reqURL, body, headers)
+                sendRequest(args.server, args.serverport, reqURL, body, headers)
             except RequestException:
                 print "Request error while stopping " + fullSvcName
                 return

@@ -20,13 +20,12 @@ def main(argv=None):
 
     # These may be configuration dependant.
     # Can add args above if necessary
-    serverPort = 6080
     folder = 'root'
 
     statusList = readList(args.filename)
 
     # Get a token
-    token = getToken(args.user, args.password, args.server, serverPort)
+    token = getToken(args.user, args.password, args.server, args.serverport)
     if token == "":
         print "Could not generate a token with the username and password provided."
         return
@@ -49,7 +48,7 @@ def main(argv=None):
         reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/status"
         # Post the request
         try:
-            data = sendRequest(args.server, serverPort, reqURL, body, headers)
+            data = sendRequest(args.server, args.serverport, reqURL, body, headers)
         except RequestException:
             print "Error while checking status for " + fullSvcName
             return
