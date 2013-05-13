@@ -7,7 +7,7 @@ import urllib
 import sys
 
 # Command line args
-import argparse 
+import argparse
 
 # Common arcgis server functions
 from agsextras import getArgs, getToken, saveList, RequestException, JsonErrorException, sendRequest
@@ -25,29 +25,29 @@ def main(argv=None):
 
     # Keep track of the started services
     startedList = []
-    
+
     # Get a token
     token = getToken(args.user, args.password, args.server, serverPort)
     if token == "":
         print "Could not generate a token with the username and password provided."
         return
-    
+
     # Construct URL to read folder - handles folders other than root for future enhancement
     if str.upper(folder) == "ROOT":
         folder = ""
     else:
         folder += "/"
-            
+
     reqURL = "/arcgis/admin/services/" + folder
-    
+
     # The requests used below only need the token and the response formatting parameter (json)
-    params = urllib.urlencode({'token': token, 'f': 'json'})
+    body = urllib.urlencode({'token': token, 'f': 'json'})
     # The request headers are also fixed
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-    
+
     # Post the request
     try:
-        data = sendRequest(args.server, serverPort, reqURL, params, headers)
+        data = sendRequest(args.server, serverPort, reqURL, body, headers)
     except RequestException:
         print "Could not read folder information."
         return
@@ -59,11 +59,11 @@ def main(argv=None):
     for item in data['services']:
         fullSvcName = item['serviceName'] + "." + item['type']
 
-        # Construct URL to get the status, then make the request                
+        # Construct URL to get the status, then make the request
         reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/status"
         # Post the request
         try:
-            data = sendRequest(args.server, serverPort, reqURL, params, headers)
+            data = sendRequest(args.server, serverPort, reqURL, body, headers)
         except RequestException:
             print "Error while checking status for " + fullSvcName
             return
@@ -82,7 +82,7 @@ def main(argv=None):
                 print "Stopping: " + fullSvcName
                 # Don't need to restore the returned data for this request
                 # All we get out of it is status which is handeled in the called function
-                sendRequest(args.server, serverPort, reqURL, params, headers)
+                sendRequest(args.server, serverPort, reqURL, body, headers)
             except RequestException:
                 print "Request error while stopping " + fullSvcName
                 return

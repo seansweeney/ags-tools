@@ -7,7 +7,7 @@ import urllib
 import sys
 
 # Command line args
-import argparse 
+import argparse
 
 # Common arcgis server functions
 from agsextras import getArgs, getToken, readList, RequestException, JsonErrorException, sendRequest
@@ -30,25 +30,26 @@ def main(argv=None):
     if token == "":
         print "Could not generate a token with the username and password provided."
         return
-    
+
     # Construct URL to read folder - handles folders other than root for future enhancement
     if str.upper(folder) == "ROOT":
         folder = ""
     else:
         folder += "/"
-            
+
     # The requests used below only need the token and the response formatting parameter (json)
-    params = urllib.urlencode({'token': token, 'f': 'json'})
+    body = urllib.urlencode({'token': token, 'f': 'json'})
+
     # The request headers are also fixed
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-    
+
     # Loop through each service in the list and get the status
     for fullSvcName in statusList:
-        # Construct URL to get the status, then make the request                
+        # Construct URL to get the status, then make the request
         reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/status"
         # Post the request
         try:
-            data = sendRequest(args.server, serverPort, reqURL, params, headers)
+            data = sendRequest(args.server, serverPort, reqURL, body, headers)
         except RequestException:
             print "Error while checking status for " + fullSvcName
             return
