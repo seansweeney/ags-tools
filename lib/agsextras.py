@@ -67,7 +67,7 @@ def getToken(username, password, serverName, serverPort):
         return token['token']
 
 # Define some custom exception classes for sendRequest
-# This will help us distinguis any errors on the calling side
+# This will help us distinguish any errors on the calling side
 class RequestException(Exception):
     pass
 
