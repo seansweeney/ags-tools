@@ -51,7 +51,7 @@ Stop the services listed in the given file.
 
 ```PowerShell
 agsstopfromlist.py [-h] -s SERVER [-u USER] [-p PASSWORD]
-                     [-f FILENAME]
+                   [-f FILENAME] [--serverport SERVERPORT]
 ```
 
 ### agsstatusfromlist.py
