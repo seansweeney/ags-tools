@@ -1,11 +1,13 @@
 # ags-tools
 
-Python scripts for mananging ArcGIS Server 10.1 map services.
+Python scripts and library module for mananging ArcGIS Server 10.1 map services.
 
 ## Included scripts
 
 * lib/agsextras.py - module containing common definitions
 * agsstopallstared.py - script to stop all started services
+* agsstatusfromlist.py - script to get the status of all the services in a given list
+* agsstartfromlist.py - script to start all the services in a given list
 
 ## Using the scripts
 
@@ -45,4 +47,12 @@ Get the status of the services listed in the given file.  This is a useful doubl
 ```PowerShell
 agsstatusfromlist.py [-h] -s SERVER [-u USER] [-p PASSWORD]
                      [-f FILENAME]
+```
+
+### agsstartfromlist.py
+Start the services listed in the given file.
+
+```PowerShell
+agsstartfromlist.py [-h] -s SERVER [-u USER] [-p PASSWORD]
+                    [-f FILENAME]
 ```
