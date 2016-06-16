@@ -38,7 +38,7 @@ Be sure to add the lib directory to your PYTHONPATH.  To make the scripts easier
     Optional file for inputting or outputting a list of services to manage.
     Default: environ['TEMP'] + '\\agsstarted.txt'
 
-### agsstopstarted.py
+### agsstopallstarted.py
 Query the server for started services, stop all of them, and write a list to disk for later re-starting.
 
 ```PowerShell
