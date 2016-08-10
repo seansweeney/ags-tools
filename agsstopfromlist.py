@@ -52,11 +52,9 @@ def main(argv=None):
             data = sendRequest(args.server, args.serverport, reqURL, body, headers)
         except RequestException:
             print "Error while stopping " + fullSvcName
-            return
         except JsonErrorException as e:
             print "Error returned when extracting status information for " + fullSvcName + "."
             print str(e)
-            return
 
     return
 
