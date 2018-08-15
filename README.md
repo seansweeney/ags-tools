@@ -1,6 +1,6 @@
 # ags-tools
 
-Python scripts and library module for mananging ArcGIS Server 10.1 map services.
+Python scripts and library module for mananging ArcGIS Server 10.x map services (tested up to 10.5.1).
 
 ## Included scripts
 
