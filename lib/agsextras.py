@@ -45,7 +45,7 @@ def getToken(username, password, serverName, serverPort):
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 
     # Connect to URL and post parameters
-    httpConn = httplib.HTTPConnection(serverName, serverPort)
+    httpConn = httplib.HTTPSConnection(serverName, serverPort)
     httpConn.request("POST", tokenURL, body, headers)
 
     # Read response
@@ -76,7 +76,7 @@ class JsonErrorException(Exception):
 
 # Perform a request
 def sendRequest(serverName, serverPort, reqURL, body, headers):
-    httpConn = httplib.HTTPConnection(serverName, serverPort)
+    httpConn = httplib.HTTPSConnection(serverName, serverPort)
     httpConn.request("POST", reqURL, body, headers)
 
     # Read response
