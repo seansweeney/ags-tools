@@ -1,5 +1,6 @@
-# Client-side http
+# Client-side https
 import httplib
+import ssl
 # url fetch
 import urllib
 # json encode/decode
@@ -48,7 +49,8 @@ def getToken(username, password, serverName, serverPort):
     if serverPort == '6080':
         httpConn = httplib.HTTPConnection(serverName, serverPort)
     else:
-        httpConn = httplib.HTTPSConnection(serverName, serverPort)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2) # Force TLS 1.2
+        httpConn = httplib.HTTPSConnection(serverName, serverPort, context=context)
     httpConn.request("POST", tokenURL, body, headers)
 
     # Read response
@@ -82,7 +84,8 @@ def sendRequest(serverName, serverPort, reqURL, body, headers):
     if serverPort == '6080':
         httpConn = httplib.HTTPConnection(serverName, serverPort)
     else:
-        httpConn = httplib.HTTPSConnection(serverName, serverPort)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2) # Force TLS 1.2
+        httpConn = httplib.HTTPSConnection(serverName, serverPort, context = context)
     httpConn.request("POST", reqURL, body, headers)
 
     # Read response
