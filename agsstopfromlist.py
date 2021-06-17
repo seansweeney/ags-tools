@@ -42,8 +42,10 @@ def main(argv=None):
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 
     # Loop through each service in the list and stop
+    totalServices = len(stopList)
+    countServices = 1
     for fullSvcName in stopList:
-        print "Stopping: " + fullSvcName
+        print "Stopping: " + fullSvcName + " (" + str(countServices) + " of " + str(totalServices) + ")"
 
         # Construct URL to get the status, then make the request
         reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/stop"
@@ -55,6 +57,8 @@ def main(argv=None):
         except JsonErrorException as e:
             print "Error returned when extracting status information for " + fullSvcName + "."
             print str(e)
+
+        countServices += 1
 
     return
 
