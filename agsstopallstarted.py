@@ -1,7 +1,7 @@
 #! python
 
 # url fetch
-import urllib
+import urllib, urllib.request
 
 # System libraries
 import sys
@@ -29,13 +29,13 @@ def main(argv=None):
     # Get a token
     token = getToken(args.user, args.password, args.server, args.serverport)
     if token == "":
-        print "Could not generate a token with the username and password provided."
+        print("Could not generate a token with the username and password provided.")
         return
     
     reqURL = "/arcgis/admin/services/"
 
     # The requests used below only need the token and the response formatting parameter (json)
-    body = urllib.urlencode({'token': token, 'f': 'json'})
+    body = urllib.parse.urlencode({'token': token, 'f': 'json'})
     
     # The request headers are also fixed
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
@@ -44,10 +44,10 @@ def main(argv=None):
     try:
         data = sendRequest(args.server, args.serverport, reqURL, body, headers)
     except RequestException:
-        print "Could not read folder information."
+        print("Could not read folder information.")
         return
     except JsonErrorException as e:
-        print "Error when reading folder information. " + str(e)
+        print(f"Error when reading folder information. {str(e)}")
         return
 
     # Loop through each service in the folder and get the status
@@ -61,11 +61,11 @@ def main(argv=None):
         try:
             data = sendRequest(args.server, args.serverport, reqURL, body, headers)
         except RequestException:
-            print "Error while checking status for " + item
+            print(f"Error while checking status for {item}")
             return
         except JsonErrorException as e:
-            print "Error returned when extracting status information for " + item
-            print str(e)
+            print(f"Error returned when extracting status information for {item}")
+            print(str(e))
             return
 
         if data['realTimeState'] == "STARTED":
@@ -75,22 +75,22 @@ def main(argv=None):
 
             # Post the request
             try:
-                print "Stopping: " + item
+                print(f"Stopping: {item}")
                 # Don't need to restore the returned data for this request
                 # All we get out of it is status which is handeled in the called function
                 sendRequest(args.server, args.serverport, reqURL, body, headers)
-                print sendRequest(args.server, args.serverport, reqURL, body, headers) 
+                print(sendRequest(args.server, args.serverport, reqURL, body, headers)) 
             except RequestException:
-                print "Request error while stopping " + item
+                print(f"Request error while stopping {item}")
                 return
             except JsonErrorException as e:
-                print "Error returned when stopping " + item
-                print str(e)
+                print(f"Error returned when stopping {item}")
+                print(str(e))
                 return
 
     # Check number of started services found
     if len(startedList) == 0:
-        print "No started services detected in folder "
+        print("No started services detected in folder ")
     else:
         # Write out all the started services found
         # This could alternatively be written to an e-mail or a log file
@@ -103,7 +103,7 @@ def main(argv=None):
 
 def allFolderFiles(args):
         # Locates the root arcgis services directory
-        jsonData = urllib.urlopen('http://%s/arcgis/rest/services/?f=pjson' % args.server)
+        jsonData = urllib.request.urlopen('http://%s/arcgis/rest/services/?f=pjson' % args.server)
 
         # Opens the root arcgis directory
         data = json.load(jsonData)
@@ -122,7 +122,7 @@ def allFolderFiles(args):
                         folder = data["folders"][folderName]
 
                         # Locates arcgis services directory of that folder
-                        jsonFolders = urllib.urlopen('http://%s/arcgis/rest/services/%s?f=pjson' % (args.server, folder))
+                        jsonFolders = urllib.request.urlopen('http://%s/arcgis/rest/services/%s?f=pjson' % (args.server, folder))
 
                         # Opens the folder
                         individualFiles = json.load(jsonFolders)
@@ -130,7 +130,7 @@ def allFolderFiles(args):
                         # Closes folder
                         jsonFolders.close()
                 except:
-                        print 'Error within the folders'
+                        print("Error within the folders")
                         
                 # Counts the number of services within folder path 
                 numberofFiles = len(individualFiles["services"])
@@ -146,12 +146,12 @@ def allFolderFiles(args):
                                 else:
                                         continue
                         except:
-                                print 'Error within the files services'
+                                print("Error within the files services")
         return allfiles
 
 def allRootFiles(args):
         # Locates the root arcgis services directory
-        jsonData = urllib.urlopen('http://%s/arcgis/rest/services/?f=pjson' % args.server)
+        jsonData = urllib.request.urlopen('http://%s/arcgis/rest/services/?f=pjson' % args.server)
 
         # Opens the root arcgis directory
         data = json.load(jsonData)
@@ -173,7 +173,7 @@ def allRootFiles(args):
                         else:
                                 continue
                 except:
-                        print 'Error within the files services'
+                        print("Error within the files services")
         return allfiles
 
 

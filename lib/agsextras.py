@@ -1,5 +1,5 @@
 # Client-side https
-import httplib
+import http.client as httplib
 import ssl
 # url fetch
 import urllib
@@ -41,7 +41,7 @@ def getToken(username, password, serverName, serverPort):
     # Token URL is typically http://server[:port]/arcgis/admin/generateToken
     tokenURL = "/arcgis/admin/generateToken"
 
-    body = urllib.urlencode({'username': username, 'password': password, 'client': 'requestip', 'f': 'json'})
+    body = urllib.parse.urlencode({'username': username, 'password': password, 'client': 'requestip', 'f': 'json'})
 
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 
@@ -57,7 +57,7 @@ def getToken(username, password, serverName, serverPort):
     response = httpConn.getresponse()
     if (response.status != 200):
         httpConn.close()
-        print "Error while fetching tokens from admin URL. Please check the URL and try again."
+        print("Error while fetching tokens from admin URL. Please check the URL and try again.")
         return
     else:
         data = response.read()
@@ -112,7 +112,7 @@ def sendRequest(serverName, serverPort, reqURL, body, headers):
 def assertJsonSuccess(data):
     obj = json.loads(data)
     if 'status' in obj and obj['status'] == "error":
-        print "Error: JSON object returns an error. " + str(obj)
+        print(f"Error: JSON object returns an error. {str(obj)}")
         return False
     else:
         return True

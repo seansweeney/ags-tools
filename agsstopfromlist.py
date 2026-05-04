@@ -27,7 +27,7 @@ def main(argv=None):
     # Get a token
     token = getToken(args.user, args.password, args.server, args.serverport)
     if token == "":
-        print "Could not generate a token with the username and password provided."
+        print("Could not generate a token with the username and password provided.")
         return
 
     # Construct URL to read folder - handles folders other than root for future enhancement
@@ -37,7 +37,7 @@ def main(argv=None):
         folder += "/"
 
     # The requests used below only need the token and the response formatting parameter (json)
-    body = urllib.urlencode({'token': token, 'f': 'json'})
+    body = urllib.parse.urlencode({'token': token, 'f': 'json'})
     # The request headers are also fixed
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 
@@ -45,7 +45,7 @@ def main(argv=None):
     totalServices = len(stopList)
     countServices = 1
     for fullSvcName in stopList:
-        print "Stopping: " + fullSvcName + " (" + str(countServices) + " of " + str(totalServices) + ")"
+        print(f"Stopping: {fullSvcName} ({countServices} of {totalServices})")
 
         # Construct URL to get the status, then make the request
         reqURL = "/arcgis/admin/services/" + folder + fullSvcName + "/stop"
@@ -53,10 +53,10 @@ def main(argv=None):
         try:
             data = sendRequest(args.server, args.serverport, reqURL, body, headers)
         except RequestException:
-            print "Error while stopping " + fullSvcName
+            print(f"Error while stopping {fullSvcName}")
         except JsonErrorException as e:
-            print "Error returned when extracting status information for " + fullSvcName + "."
-            print str(e)
+            print(f"Error returned when extracting status information for {fullSvcName}.")
+            print(str(e))
 
         countServices += 1
 
