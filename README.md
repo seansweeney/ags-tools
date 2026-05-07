@@ -6,6 +6,7 @@ Python scripts and library module for mananging ArcGIS Server 10.x map services 
 
 * lib/agsextras.py - module containing common definitions
 * agsstopallstared.py - script to stop all started services
+* agsstopfromlist.py - script to stop all the services in a given list
 * agsstatusfromlist.py - script to get the status of all the services in a given list
 * agsstartfromlist.py - script to start all the services in a given list
 
